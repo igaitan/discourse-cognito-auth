@@ -7,6 +7,8 @@ plugins:
     default: ""
   cognito_user_pool_id:
     default: ""
+  cognito_user_pool_site:
+    default: ""
   cognito_verbose_logging:
     default: false    
   cognito_auth_enabled:

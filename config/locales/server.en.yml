@@ -8,3 +8,4 @@ en:
     cognito_user_pool_id: "User Pool ID"
     cognito_auth_enabled: "Enable Login via Cognito"
     cognito_verbose_logging: "Enable verbose logging Cognito"
+    cognito_user_pool_site: "Cognito User Pool Domain"

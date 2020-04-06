@@ -24,19 +24,25 @@ class Auth::CognitoAuthenticator < Auth::ManagedAuthenticator
 
   def register_middleware(omniauth)
     omniauth.provider :cognito_idp,
-           name: :cognitoidp,
-           verbose_logger: lambda {
-            return unless SiteSetting.cognito_verbose_logging
-            Rails.logger.warn("COGNITO-IDP Log: #{message}")
-           },
-           setup: lambda { |env|
-            strategy = env["omniauth.strategy"]
-            strategy.options[:client_id] = SiteSetting.cognito_app_id
-            strategy.options[:client_secret] = SiteSetting.cognito_secure_key
-            strategy.options[:scope] = 'email openid aws.cognito.signin.user.admin profile'
-            strategy.options[:user_pool_id] = SiteSetting.cognito_user_pool_id
-            strategy.options[:aws_region] = SiteSetting.cognito_aws_region
-           }
+      name: :cognitoidp,
+      verbose_logger: lambda {
+        return unless SiteSetting.cognito_verbose_logging
+        Rails.logger.warn("COGNITO-IDP Log: #{message}")
+      },
+      setup: lambda { |env|            
+        opts = env['omniauth.strategy'].options
+
+        opts.deep_merge!(
+          client_id: SiteSetting.cognito_app_id,
+          client_secret: SiteSetting.cognito_secure_key,
+          scope: 'email openid aws.cognito.signin.user.admin profile',
+          user_pool_id: SiteSetting.cognito_user_pool_id,
+          aws_region: SiteSetting.cognito_aws_region,
+          client_options: {
+            site: SiteSetting.cognito_user_pool_site
+          }
+        )
+      }
   end
 
   def description_for_user(user)
