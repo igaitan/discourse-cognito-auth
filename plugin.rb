@@ -15,7 +15,7 @@ gem 'omniauth-cognito-idp', '0.1.1'
 class Auth::CognitoAuthenticator < Auth::ManagedAuthenticator
 
   def name
-    "CognitoIdP"
+    "cognitoidp"
   end
 
   def enabled?
@@ -23,18 +23,24 @@ class Auth::CognitoAuthenticator < Auth::ManagedAuthenticator
   end
 
   def register_middleware(omniauth)
-    omniauth.provider :CognitoIdP,
+    omniauth.provider :cognito_idp,
+           name: :cognitoidp,
+           verbose_logger: lambda {
+            return unless SiteSetting.cognito_verbose_logging
+            Rails.logger.warn("COGNITO-IDP Log: #{message}")
+           },
            setup: lambda { |env|
-             strategy = env["omniauth.strategy"]
-              strategy.options[:client_id] = SiteSetting.cognito_app_id
-              strategy.options[:client_secret] = SiteSetting.cognito_secure_key
-              strategy.options[:scope] = 'email openid aws.cognito.signin.user.admin profile'
-              strategy.options[:user_pool_id] = SiteSetting.cognito_user_pool_id
-              strategy.options[:aws_region] = SiteSetting.cognito_aws_region
+            strategy = env["omniauth.strategy"]
+            strategy.options[:client_id] = SiteSetting.cognito_app_id
+            strategy.options[:client_secret] = SiteSetting.cognito_secure_key
+            strategy.options[:scope] = 'email openid aws.cognito.signin.user.admin profile'
+            strategy.options[:user_pool_id] = SiteSetting.cognito_user_pool_id
+            strategy.options[:aws_region] = SiteSetting.cognito_aws_region
            }
   end
 
   def description_for_user(user)
+    Rails.logger.warn("COGNITO-IDP Log: description_for_user()")
     info = UserAssociatedAccount.find_by(provider_name: name, user_id: user.id)&.info
     return "" if info.nil?
 
@@ -42,6 +48,7 @@ class Auth::CognitoAuthenticator < Auth::ManagedAuthenticator
   end
 
   def after_authenticate(auth_token, existing_account: nil)
+    Rails.logger.warn("COGNITO-IDP Log: after_authenticate()")
     # Ignore extra data (we don't need it)
     auth_token[:extra] = {}
     super
