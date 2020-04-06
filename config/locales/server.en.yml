@@ -6,4 +6,4 @@ en:
     cognito_secure_key: "Secure Key"
     cognito_aws_region: "Aws Region"
     cognito_user_pool_id: "User Pool ID"
-    cognito_auth_enabled: "Enable Login via Cognito""
+    cognito_auth_enabled: "Enable Login via Cognito"

@@ -10,7 +10,7 @@ enabled_site_setting :cognito_secure_key
 enabled_site_setting :cognito_aws_region
 enabled_site_setting :cognito_user_pool_id
 
-gem 'omniauth-cognito-idp', '1.5.0'
+gem 'omniauth-cognito-idp'
 
 class Auth::CognitoAuthenticator < Auth::ManagedAuthenticator
 
